@@ -9,9 +9,10 @@
 #include <QAuthenticator>
 #include <QWebEngineDownloadItem>
 #include <QWebEngineProfile>
+#include <QWebEngineUrlRequestInfo>
 #include <QDir>
 
-enum Error{ no_Error, no_Connexion, need_Auth };
+enum Error{ no_Error, no_Connexion, need_Auth, loading };
 
 class Web_Engine : public QObject
 {
@@ -32,18 +33,24 @@ public:
     bool Remove_Auth(const QString url);
     int Last_Error() const;
     void Set_Wait_Finished(bool active);
+    void Clear();
+
+public slots:
+    void Test(QString result = 0);
 
 signals:
     void Progress(int actual);
     void finished(int error);
     void Download_Progress(qint64 actual,qint64 total);
     void Download_Finished(QString url);
+    void Get_Finished(const QString &result);
 
 private slots:
     void Load_Finished();
     void Authentication(QUrl url, QAuthenticator *auth);
     void Start_Download(QWebEngineDownloadItem *down);
     void Ending_Download();
+    void End_Load();
 
 private:
     void Set_Use(const bool state);

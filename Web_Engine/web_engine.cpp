@@ -1,7 +1,7 @@
 #include "web_engine.h"
 
 ////////////////////////////////
-/// Version 1.0
+/// Version 1.01
 ////////////////////////////////
 
 
@@ -35,10 +35,54 @@ Web_Engine::~Web_Engine()
     qDebug() << "Remove Temp" << dir.removeRecursively();
 }
 
+void Web_Engine::Test(QString result)
+{
+    static int t(0);
+
+    if(t == 0)
+    {
+        this->Show();
+        qDebug() << "STARTING TEST(WAIT)";
+        qDebug() << "TEST Load page" << Load("http://google.fr");
+        qDebug() << "TEST Get Plaintext :" << Get_PlainText();
+        qDebug() << "TEST Get Html :" << Get_Html();
+        qDebug() << "TEST Last error :" << Last_Error();
+        qDebug() << "END TEST(WAIT)";
+        qDebug() << "STARTING TEST(CONNECT)";
+        Set_Wait_Finished(false);
+        connect(this,SIGNAL(finished(int)),this,SLOT(Test()));
+        qDebug() << "TEST Load page" << Load("http://google.fr");
+        qDebug() << "TEST Loading" << is_Used();
+        t++;
+    }
+    else if(t == 1)
+    {
+        connect(this,SIGNAL(Get_Finished(QString)),this,SLOT(Test()));
+        qDebug() << "TEST Loading" << is_Used();
+        qDebug() << "TEST Get Html :" << Get_Html();
+        t++;
+    }
+    else if(t == 2)
+    {
+        qDebug() << "TEST Get Plaintext :" << Get_PlainText();
+        t++;
+    }
+    else if(t == 3)
+    {
+        disconnect(this,SIGNAL(finished(int)),this,SLOT(Test()));
+        disconnect(this,SIGNAL(Get_Finished(QString)),this,SLOT(Test()));
+        qDebug() << "TEST Last error :" << Last_Error();
+        qDebug() << "END TEST(CONNECT)";
+        this->Hide();
+        delete this;
+        exit(0);
+    }
+}
+
 bool Web_Engine::Load(QString url)
 {
     Set_Error(no_Error);
-    _used = true;
+    Set_Use(true);
 
     if(!url.contains("http://") && !url.contains("https://"))
         url = "http://" + url;
@@ -47,7 +91,11 @@ bool Web_Engine::Load(QString url)
     qDebug() << "Load page :" << url;
 
     if(_wait_Finished)
+    {
         Wait(30000);
+        Set_Use(false);
+        End_Load();
+    }
 
     return true;
 }
@@ -72,18 +120,45 @@ bool Web_Engine::is_Used() const
     return _used;
 }
 
+void Web_Engine::Clear()
+{
+    _web->page()->deleteLater();
+}
+
 QString Web_Engine::Get_Html()
 {
     qDebug() << "Get_Html";
+    if(is_Used())
+    {
+        Set_Error(loading);
+        qDebug() << "Error page is loading";
+        emit Get_Finished(0);
+        return QString();
+    }
     bool end(false);
     QFile f("Temp/Html.txt");
     f.resize(0);
-    if(!f.open(QIODevice::WriteOnly))
-        qDebug() << "error open file";
-    _web->page()->toHtml([&end,&f](const QString &result){ f.write(result.toUtf8()); end = true; });
-    while(!end)
-        Wait(500);
-    f.close();
+
+    if(_wait_Finished)
+    {
+        if(!f.open(QIODevice::WriteOnly))
+            qDebug() << "error open file";
+        _web->page()->toHtml([&end,&f](const QString &result){
+            f.write(result.toUtf8());
+            end = true; });
+        while(!end)
+            Wait(500);
+        f.close();
+    }
+    else
+    {
+        _web->page()->toHtml([this](const QString &result){
+            QFile f("Temp/Html.txt");
+            qDebug() << "file open :" << f.open(QIODevice::WriteOnly);
+            f.write(result.toUtf8());
+            f.close();
+            emit Get_Finished(0); });
+    }
 
     return f.fileName();
 }
@@ -91,26 +166,67 @@ QString Web_Engine::Get_Html()
 QString Web_Engine::Get_PlainText()
 {
     qDebug() << "Get_Plaintext";
+    if(is_Used())
+    {
+        Set_Error(loading);
+        qDebug() << "Error page is loading";
+        emit Get_Finished(0);
+        return QString();
+    }
     bool end(false);
     QFile f("Temp/Plaintext.txt");
     f.resize(0);
-    if(!f.open(QIODevice::WriteOnly))
-        qDebug() << "error open file";
-    _web->page()->toPlainText([&end,&f](const QString &result){ f.write(result.toUtf8()); end = true; });
-    while(!end)
-        Wait(500);
-    f.close();
+
+    if(_wait_Finished)
+    {
+        if(!f.open(QIODevice::WriteOnly))
+            qDebug() << "error open file";
+        _web->page()->toPlainText([&end,&f](const QString &result){
+            f.write(result.toUtf8());
+            end = true; });
+        while(!end)
+            Wait(500);
+        f.close();
+    }
+    else
+    {
+        _web->page()->toPlainText([this](const QString &result){
+            QFile f("Temp/Plaintext.txt");
+            f.open(QIODevice::WriteOnly);
+            f.write(result.toUtf8());
+            f.close();
+            emit Get_Finished(0); });
+    }
+
     return f.fileName();
 }
 
 QVariant Web_Engine::Set_Javascript(const QString script)
 {
     qDebug() << "Send Javascript :" << script;
+    if(is_Used())
+    {
+        Set_Error(loading);
+        qDebug() << "Error page is loading";
+        emit Get_Finished(0);
+        return QVariant(0);
+    }
     bool end(false);
     QVariant res;
-    _web->page()->runJavaScript(script,[&end,&res](const QVariant &result){ res = result; end = true; });
-    while(!end)
-        Wait(500);
+    if(_wait_Finished)
+    {
+        _web->page()->runJavaScript(script,[&end,&res](const QVariant &result){
+            res = result;
+            end = true; });
+        while(!end)
+            Wait(500);
+    }
+    else
+    {
+        res = 'NULL';
+        _web->page()->runJavaScript(script,[this](const QVariant &result){
+            emit Get_Finished(result.toString()); });
+    }
     return res;
 }
 
@@ -129,19 +245,39 @@ void Web_Engine::Wait(int msec)
     _timer->stop();
 }
 
+void Web_Engine::End_Load()
+{
+    Set_Use(false);
+
+    if(!_wait_Finished)
+        connect(this,SIGNAL(Get_Finished(QString)),this,SLOT(Load_Finished()));
+
+    Get_PlainText();
+    if(_wait_Finished)
+        Load_Finished();
+}
+
 void Web_Engine::Load_Finished()
 {
-    QString test = Get_PlainText();
-    if(test.contains("Aucune connexion Internet"))
+    QString test;
+    if(!_wait_Finished)
+        disconnect(this,SIGNAL(Get_Finished(QString)),this,SLOT(Load_Finished()));
+
+    QFile f("Temp/Plaintext.txt");
+    f.open(QIODevice::ReadOnly);
+    QTextStream flux(&f);
+    test = flux.readAll();
+    qDebug() << test;
+
+    if(test.contains("ERR_NAME_NOT_RESOLVED"))
     {
-        emit finished(-1);
         Set_Error(no_Connexion);
+        emit finished(-1);
     }
     else
         emit finished(0);
 
     qDebug() << "Load finished" << Last_Error();
-    _used = false;
 }
 
 void Web_Engine::Authentication(QUrl url,QAuthenticator *auth)
@@ -216,11 +352,11 @@ void Web_Engine::Set_Wait_Finished(bool active)
     if(active)
     {
         connect(_web,SIGNAL(loadFinished(bool)),_loop,SLOT(quit()));
-        disconnect(_web,SIGNAL(loadFinished(bool)),this,SLOT(Load_Finished()));
+        disconnect(_web,SIGNAL(loadFinished(bool)),this,SLOT(End_Load()));
     }
     else
     {
         disconnect(_web,SIGNAL(loadFinished(bool)),_loop,SLOT(quit()));
-        connect(_web,SIGNAL(loadFinished(bool)),this,SLOT(Load_Finished()));
+        connect(_web,SIGNAL(loadFinished(bool)),this,SLOT(End_Load()));
     }
 }

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Web_Engine_t {
-    QByteArrayData data[18];
-    char stringdata0[199];
+    QByteArrayData data[20];
+    char stringdata0[217];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,22 +39,25 @@ QT_MOC_LITERAL(6, 43, 17), // "Download_Progress"
 QT_MOC_LITERAL(7, 61, 5), // "total"
 QT_MOC_LITERAL(8, 67, 17), // "Download_Finished"
 QT_MOC_LITERAL(9, 85, 3), // "url"
-QT_MOC_LITERAL(10, 89, 13), // "Load_Finished"
-QT_MOC_LITERAL(11, 103, 14), // "Authentication"
-QT_MOC_LITERAL(12, 118, 15), // "QAuthenticator*"
-QT_MOC_LITERAL(13, 134, 4), // "auth"
-QT_MOC_LITERAL(14, 139, 14), // "Start_Download"
-QT_MOC_LITERAL(15, 154, 23), // "QWebEngineDownloadItem*"
-QT_MOC_LITERAL(16, 178, 4), // "down"
-QT_MOC_LITERAL(17, 183, 15) // "Ending_Download"
+QT_MOC_LITERAL(10, 89, 12), // "Get_Finished"
+QT_MOC_LITERAL(11, 102, 4), // "Test"
+QT_MOC_LITERAL(12, 107, 13), // "Load_Finished"
+QT_MOC_LITERAL(13, 121, 14), // "Authentication"
+QT_MOC_LITERAL(14, 136, 15), // "QAuthenticator*"
+QT_MOC_LITERAL(15, 152, 4), // "auth"
+QT_MOC_LITERAL(16, 157, 14), // "Start_Download"
+QT_MOC_LITERAL(17, 172, 23), // "QWebEngineDownloadItem*"
+QT_MOC_LITERAL(18, 196, 4), // "down"
+QT_MOC_LITERAL(19, 201, 15) // "Ending_Download"
 
     },
     "Web_Engine\0Progress\0\0actual\0finished\0"
     "error\0Download_Progress\0total\0"
-    "Download_Finished\0url\0Load_Finished\0"
-    "Authentication\0QAuthenticator*\0auth\0"
-    "Start_Download\0QWebEngineDownloadItem*\0"
-    "down\0Ending_Download"
+    "Download_Finished\0url\0Get_Finished\0"
+    "Test\0Load_Finished\0Authentication\0"
+    "QAuthenticator*\0auth\0Start_Download\0"
+    "QWebEngineDownloadItem*\0down\0"
+    "Ending_Download"
 };
 #undef QT_MOC_LITERAL
 
@@ -64,35 +67,39 @@ static const uint qt_meta_data_Web_Engine[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   54,    2, 0x06 /* Public */,
-       4,    1,   57,    2, 0x06 /* Public */,
-       6,    2,   60,    2, 0x06 /* Public */,
-       8,    1,   65,    2, 0x06 /* Public */,
+       1,    1,   64,    2, 0x06 /* Public */,
+       4,    1,   67,    2, 0x06 /* Public */,
+       6,    2,   70,    2, 0x06 /* Public */,
+       8,    1,   75,    2, 0x06 /* Public */,
+      10,    0,   78,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      10,    0,   68,    2, 0x08 /* Private */,
-      11,    2,   69,    2, 0x08 /* Private */,
-      14,    1,   74,    2, 0x08 /* Private */,
-      17,    0,   77,    2, 0x08 /* Private */,
+      11,    0,   79,    2, 0x0a /* Public */,
+      12,    0,   80,    2, 0x08 /* Private */,
+      13,    2,   81,    2, 0x08 /* Private */,
+      16,    1,   86,    2, 0x08 /* Private */,
+      19,    0,   89,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Int,    5,
     QMetaType::Void, QMetaType::LongLong, QMetaType::LongLong,    3,    7,
     QMetaType::Void, QMetaType::QString,    9,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QUrl, 0x80000000 | 12,    9,   13,
-    QMetaType::Void, 0x80000000 | 15,   16,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QUrl, 0x80000000 | 14,    9,   15,
+    QMetaType::Void, 0x80000000 | 17,   18,
     QMetaType::Void,
 
        0        // eod
@@ -108,16 +115,18 @@ void Web_Engine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 1: _t->finished((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 2: _t->Download_Progress((*reinterpret_cast< qint64(*)>(_a[1])),(*reinterpret_cast< qint64(*)>(_a[2]))); break;
         case 3: _t->Download_Finished((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 4: _t->Load_Finished(); break;
-        case 5: _t->Authentication((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< QAuthenticator*(*)>(_a[2]))); break;
-        case 6: _t->Start_Download((*reinterpret_cast< QWebEngineDownloadItem*(*)>(_a[1]))); break;
-        case 7: _t->Ending_Download(); break;
+        case 4: _t->Get_Finished(); break;
+        case 5: _t->Test(); break;
+        case 6: _t->Load_Finished(); break;
+        case 7: _t->Authentication((*reinterpret_cast< QUrl(*)>(_a[1])),(*reinterpret_cast< QAuthenticator*(*)>(_a[2]))); break;
+        case 8: _t->Start_Download((*reinterpret_cast< QWebEngineDownloadItem*(*)>(_a[1]))); break;
+        case 9: _t->Ending_Download(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 6:
+        case 8:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -156,6 +165,13 @@ void Web_Engine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 return;
             }
         }
+        {
+            typedef void (Web_Engine::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Web_Engine::Get_Finished)) {
+                *result = 4;
+                return;
+            }
+        }
     }
 }
 
@@ -184,13 +200,13 @@ int Web_Engine::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }
@@ -221,5 +237,11 @@ void Web_Engine::Download_Finished(QString _t1)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
+}
+
+// SIGNAL 4
+void Web_Engine::Get_Finished()
+{
+    QMetaObject::activate(this, &staticMetaObject, 4, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE
